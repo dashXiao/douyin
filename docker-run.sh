@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# create folder
+mkdir -p data/mysql
+mkdir -p data/redis
+mkdir -p data/zookeeper/data
+mkdir -p data/zookeeper/log
+mkdir -p data/kafka/data
+mkdir -p data/etcd
+
+mkdir -p config/mysql
+mkdir -p config/redis
+mkdir -p config/kafka
+mkdir -p config/etcd
+
+IMAGE_NAME="tiktok"
+SERVICE_TO_START=${1:-all} # default start all
+
+
+DIR=$(cd $(dirname $0); pwd)
+
+SERVICES=(api user chat follow interaction video)
+
+remove_container() {
+    container_status=$(docker inspect -f '{{.State.Status}}' "$1")
+    if [ "$container_status" == "running" ]; then
+        echo "Stopping container $1..."
+        docker stop "$1"
+    elif [ "$container_status" == "paused" ]; then
+        echo "Unpausing and then stopping container $1..."
+        docker unpause "$1"
+        docker stop "$1"
+    fi
+    echo "Remove container $1..."
+    docker rm "$1"
+}
+
+start_container() {
+    echo "Starting container for $1..."
+    if [ "$1" == "api" ]; then
+        docker run -d --name "tiktok-$1" \
+        -e service=$1 \
+        --network=tiktok_tiktok \
+        -p 10001:10001 \
+        -v $DIR/config:/app/config \
+        "$IMAGE_NAME"
+    else
+        docker run -d --name "tiktok-$1" \
+        -e service=$1 \
+        --network=tiktok_tiktok \
+        -v $DIR/config:/app/config \
+        "$IMAGE_NAME"
+    fi
+}
+
+containers_to_stop=$(docker ps -aq --filter "ancestor=$IMAGE_NAME")
+if [ "$SERVICE_TO_START" == "all" ]; then
+    for container_id in $containers_to_stop; do
+        remove_container $container_id
+    done
+else
+    for container_id in $containers_to_stop; do
+        container_id=$(docker inspect -f '{{.Name}}' "$container_id")
+        if [ "$container_id" != "/tiktok-$SERVICE_TO_START" ]; then
+            continue
+        fi
+        remove_container $container_id
+    done
+fi
+
+if [ "$SERVICE_TO_START" == "all" ]; then
+    for service in "${SERVICES[@]}"; do
+        start_container $service
+    done
+else
+    start_container $SERVICE_TO_START
+fi
