@@ -7,25 +7,25 @@
   },
   "tags": [
     {
-      "name": "基础接口"
+      "name": "Core APIs"
     },
     {
-      "name": "互动接口"
+      "name": "Interaction APIs"
     },
     {
-      "name": "社交接口"
+      "name": "Social APIs"
     }
   ],
   "paths": {
     "/user/register": {
       "post": {
-        "summary": "用户注册",
-        "x-apifox-folder": "基础接口",
+        "summary": "Register a user",
+        "x-apifox-folder": "Core APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "基础接口"
+          "Core APIs"
         ],
         "parameters": [],
         "requestBody": {
@@ -49,7 +49,7 @@
         },
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -67,13 +67,13 @@
     },
     "/user/login": {
       "post": {
-        "summary": "用户登录",
-        "x-apifox-folder": "基础接口",
+        "summary": "Log in",
+        "x-apifox-folder": "Core APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "基础接口"
+          "Core APIs"
         ],
         "parameters": [],
         "requestBody": {
@@ -97,7 +97,7 @@
         },
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -115,13 +115,13 @@
     },
     "/user": {
       "get": {
-        "summary": "用户信息",
-        "x-apifox-folder": "基础接口",
+        "summary": "Get user information",
+        "x-apifox-folder": "Core APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "基础接口"
+          "Core APIs"
         ],
         "parameters": [
           {
@@ -145,7 +145,7 @@
         ],
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -163,13 +163,13 @@
     },
     "/relation/action/": {
       "post": {
-        "summary": "关注操作",
-        "x-apifox-folder": "社交接口",
+        "summary": "Follow or unfollow a user",
+        "x-apifox-folder": "Social APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "社交接口"
+          "Social APIs"
         ],
         "parameters": [],
         "requestBody": {
@@ -195,7 +195,7 @@
         },
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -213,13 +213,13 @@
     },
     "/relation/follow/list": {
       "get": {
-        "summary": "关注列表",
-        "x-apifox-folder": "社交接口",
+        "summary": "List followed users",
+        "x-apifox-folder": "Social APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "社交接口"
+          "Social APIs"
         ],
         "parameters": [
           {
@@ -245,7 +245,7 @@
         ],
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -263,13 +263,13 @@
     },
     "/relation/follower/list": {
       "get": {
-        "summary": "粉丝列表",
-        "x-apifox-folder": "社交接口",
+        "summary": "List followers",
+        "x-apifox-folder": "Social APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "社交接口"
+          "Social APIs"
         ],
         "parameters": [
           {
@@ -295,7 +295,7 @@
         ],
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -313,13 +313,13 @@
     },
     "/relation/friend/list": {
       "get": {
-        "summary": "好友列表",
-        "x-apifox-folder": "社交接口",
+        "summary": "List friends",
+        "x-apifox-folder": "Social APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "社交接口"
+          "Social APIs"
         ],
         "parameters": [
           {
@@ -345,7 +345,7 @@
         ],
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -363,13 +363,13 @@
     },
     "/message/action": {
       "post": {
-        "summary": "发送消息",
-        "x-apifox-folder": "社交接口",
+        "summary": "Send a message",
+        "x-apifox-folder": "Social APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "社交接口"
+          "Social APIs"
         ],
         "parameters": [],
         "requestBody": {
@@ -394,7 +394,7 @@
         },
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -412,13 +412,13 @@
     },
     "/message/chat": {
       "get": {
-        "summary": "聊天记录",
-        "x-apifox-folder": "社交接口",
+        "summary": "Get chat history",
+        "x-apifox-folder": "Social APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "社交接口"
+          "Social APIs"
         ],
         "parameters": [
           {
@@ -444,7 +444,7 @@
         ],
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -462,13 +462,13 @@
     },
     "/favorite/action": {
       "post": {
-        "summary": "点赞操作",
-        "x-apifox-folder": "互动接口",
+        "summary": "Like or unlike a video",
+        "x-apifox-folder": "Interaction APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "互动接口"
+          "Interaction APIs"
         ],
         "parameters": [],
         "requestBody": {
@@ -497,7 +497,7 @@
         },
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -515,13 +515,13 @@
     },
     "/favorite/list/": {
       "get": {
-        "summary": "喜欢列表",
-        "x-apifox-folder": "互动接口",
+        "summary": "List liked videos",
+        "x-apifox-folder": "Interaction APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "互动接口"
+          "Interaction APIs"
         ],
         "parameters": [
           {
@@ -547,7 +547,7 @@
         ],
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -565,13 +565,13 @@
     },
     "/comment/action": {
       "post": {
-        "summary": "评论操作",
-        "x-apifox-folder": "互动接口",
+        "summary": "Create or delete a comment",
+        "x-apifox-folder": "Interaction APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "互动接口"
+          "Interaction APIs"
         ],
         "parameters": [],
         "requestBody": {
@@ -606,7 +606,7 @@
         },
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -624,13 +624,13 @@
     },
     "/comment/list": {
       "get": {
-        "summary": "评论列表",
-        "x-apifox-folder": "互动接口",
+        "summary": "List comments",
+        "x-apifox-folder": "Interaction APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "互动接口"
+          "Interaction APIs"
         ],
         "parameters": [
           {
@@ -656,7 +656,7 @@
         ],
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -674,13 +674,13 @@
     },
     "/feed/": {
       "get": {
-        "summary": "视频流接口",
-        "x-apifox-folder": "基础接口",
+        "summary": "Get the video feed",
+        "x-apifox-folder": "Core APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "基础接口"
+          "Core APIs"
         ],
         "parameters": [
           {
@@ -706,7 +706,7 @@
         ],
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -724,13 +724,13 @@
     },
     "/publish/action/": {
       "post": {
-        "summary": "投稿接口（支持自定义封面）",
-        "x-apifox-folder": "基础接口",
+        "summary": "Publish a video (custom cover supported)",
+        "x-apifox-folder": "Core APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "基础接口"
+          "Core APIs"
         ],
         "parameters": [],
         "requestBody": {
@@ -764,7 +764,7 @@
         },
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -782,13 +782,13 @@
     },
     "/publish/list": {
       "get": {
-        "summary": "发布列表",
-        "x-apifox-folder": "基础接口",
+        "summary": "List published videos",
+        "x-apifox-folder": "Core APIs",
         "x-apifox-status": "developing",
         "deprecated": false,
         "description": "",
         "tags": [
-          "基础接口"
+          "Core APIs"
         ],
         "parameters": [
           {
@@ -814,7 +814,7 @@
         ],
         "responses": {
           "200": {
-            "description": "成功",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -837,7 +837,7 @@
   "servers": [
     {
       "url": "http://47.243.155.129/douyin",
-      "description": "开发环境"
+      "description": "Development environment"
     }
   ]
 }

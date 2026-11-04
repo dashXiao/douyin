@@ -1,19 +1,53 @@
 # TikTok Microservices Demo
 
-一个基于 Go 的 分布式 TikTok 后端微服务示例项目。
+**English** | [中文](docs/zh-CN/README.md)
 
-## 特点
+A Go microservices backend for a short-video social app with video feeds, social interactions, and direct messaging.
 
-- 基于功能分类构建四个微服务，通过etcd服务注册与发现，实现视频上传、Feed流、点赞评论、关注关系等核心业务
+## Features
 
-## 技术栈
--  Go
--  Hertz
--  Kitex
--  MySQL
--  Redis
--  Kafka
--  etcd
+- **Service coordination:** etcd-based service discovery and centralized configuration.
+- **Caching:** Redis caches for video feeds and follow relationships.
+- **Asynchronous messaging:** Kafka-based chat persistence with synchronous fallback.
+- **Video publishing:** OSS storage with custom covers or FFmpeg-generated thumbnails.
 
-## 快速开始
-见 [start_steps.md](start_steps.md)。
+## Technology Stack
+
+| Area | Technologies |
+| --- | --- |
+| Language | Go |
+| HTTP & RPC | Hertz, Kitex, Thrift, Protocol Buffers |
+| Data | MySQL, GORM, Redis |
+| Messaging & Configuration | Kafka, ZooKeeper, etcd |
+| Media | Alibaba Cloud OSS, FFmpeg |
+| Deployment | Docker, Docker Compose, Nginx |
+
+## Architecture
+
+The HTTP gateway calls five business services through Kitex RPC. etcd provides service discovery and shared configuration.
+
+```mermaid
+flowchart TB
+    Client["Client / API Playground"] -->|HTTP| Gateway["API Gateway · Hertz"]
+
+    subgraph Services["Business Services · Kitex RPC"]
+        User["User"]
+        Video["Video · FFmpeg"]
+        Interaction["Interaction"]
+        Follow["Follow"]
+        Chat["Chat"]
+    end
+
+    Gateway --> User
+    Gateway --> Video
+    Gateway --> Interaction
+    Gateway --> Follow
+    Gateway --> Chat
+    Services --> Data[("MySQL / Redis")]
+    Gateway -.-> Etcd["etcd"]
+    Services -.-> Etcd
+    Video --> OSS["Alibaba Cloud OSS"]
+    Chat <-->|Messages| Kafka["Kafka"]
+```
+
+[Startup guide](start_steps.md) · [API reference](demo/tiktok.openapi.json)
