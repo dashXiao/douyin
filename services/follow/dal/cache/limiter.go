@@ -21,7 +21,7 @@ func Limit(ctx context.Context, rate int, interval time.Duration) error {
 	}
 	// Reject the request when the window has reached its limit.
 	if size >= int64(rate) {
-		return errors.New("too many request")
+		return errors.New("request rate limit exceeded")
 	}
 	// Record the current request timestamp in the sorted set.
 	RedisClient.ZAdd(ctx, key, redis.Z{Score: float64(now), Member: float64(now)})

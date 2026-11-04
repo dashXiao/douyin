@@ -12,7 +12,7 @@ import (
 
 func (c *ChatService) SendMessage(req *chat.MessagePostRequest, userId int64, createAt string) error {
 	if len(req.Content) == 0 || len(req.Content) > 1000 {
-		return errors.New("character limit error")
+		return errors.New("invalid message length")
 	}
 	// ensure both sender and receiver exist to avoid FK errors
 	if _, err := rpc.GetUser(c.ctx, &user.InfoRequest{UserId: userId, Token: req.Token}); err != nil {

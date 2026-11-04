@@ -139,17 +139,17 @@
 
     <main class="content">
       <h1>TikTok API Playground</h1>
-      <p>Fill params, send, and preview cURL. Base URL defaults to your gateway.</p>
+      <p>Choose an endpoint, enter its parameters, and send a request. Preview the matching cURL command.</p>
 
       <div class="panel grid">
         <div class="grid two">
           <div>
             <label>Base URL</label>
             <input id="baseUrl" placeholder="http://your-ip:10001/douyin" value="">
-            <div class="hint">You can point to ECS IP or domain.</div>
+            <div class="hint">Enter the API base URL for your local or deployed server.</div>
           </div>
           <div>
-            <label>Selected</label>
+            <label>Selected Endpoint</label>
             <div class="pill" id="methodPill">GET</div>
             <div class="hint" id="opHint"></div>
           </div>
@@ -165,7 +165,7 @@
         <div class="grid two">
           <div>
             <h3 class="section-title">Response</h3>
-            <div class="response-meta" id="respMeta">Not sent</div>
+            <div class="response-meta" id="respMeta">No request sent</div>
             <pre id="responseBox">Awaiting request...</pre>
           </div>
           <div>
@@ -201,19 +201,19 @@
       if (match("/user/register", "register")) return "Register";
       if (match("/user/login", "login")) return "Login";
       if (match("/user", "user")) return "User Info";
-      if (match("/relation/follower", "follower")) return "Follower List";
-      if (match("/relation/follow", "follow")) return "Follow List";
+      if (match("/relation/follower", "follower")) return "Followers";
+      if (match("/relation/follow", "follow")) return "Following";
       if (match("/relation/friend", "friend")) return "Friends";
       if (match("/relation/action", "follow")) return "Follow";
       if (match("/favorite/action", "favorite")) return "Like";
       if (match("/favorite/list", "favorite")) return "User's Likes";
       if (match("/comment/action", "comment")) return "Comment";
       if (match("/comment/list", "comment")) return "Video Comments";
-      if (match("/message/chat", "chat")) return "Chat";
-      if (match("/message/action", "message")) return "Messages";
+      if (match("/message/chat", "chat")) return "Chat History";
+      if (match("/message/action", "message")) return "Send Message";
       if (match("/feed", "feed")) return "Feed";
-      if (match("/publish/action", "publish")) return "Publish";
-      if (match("/publish/list", "publish")) return "Feeds";
+      if (match("/publish/action", "publish")) return "Publish Video";
+      if (match("/publish/list", "publish")) return "Published Videos";
       const fallback = summary || path || "Api";
       const clean = fallback.replace(/[^a-zA-Z0-9]/g, " ").trim().split(/\s+/)[0] || "Api";
       return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
@@ -297,7 +297,7 @@
       panel.innerHTML = "";
       const params = (state.current && state.current.params ? state.current.params : []).filter(function (p) { return p.in === "query"; });
       if (!params.length) {
-        panel.innerHTML = '<div class="muted">No query params.</div>';
+        panel.innerHTML = '<div class="muted">This endpoint has no query parameters.</div>';
         return;
       }
       params.forEach(p => {
@@ -318,7 +318,7 @@
       const props = (state.current && state.current.bodyProps) || {};
       const entries = Object.entries(props);
       if (!entries.length) {
-        panel.innerHTML = '<div class="muted">No form params.</div>';
+        panel.innerHTML = '<div class="muted">This endpoint has no form fields.</div>';
         return;
       }
       entries.forEach(([name, meta]) => {
@@ -367,7 +367,7 @@
         statusText = `${res.status} ${res.statusText}`;
         bodyText = await res.text();
       } catch (err) {
-        statusText = "请求失败";
+        statusText = "Request failed";
         bodyText = err.message || String(err);
       }
       const duration = (performance.now() - start).toFixed(0);

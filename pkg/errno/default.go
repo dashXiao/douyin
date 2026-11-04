@@ -6,32 +6,32 @@ var (
 	// Success
 	Success = NewErrNo(SuccessCode, "Success")
 
-	ServiceError             = NewErrNo(ServiceErrorCode, "service is unable to start successfully")
-	ServiceInternalError     = NewErrNo(ServiceErrorCode, "service internal error")
-	ParamError               = NewErrNo(ParamErrorCode, "parameter error")
+	ServiceError             = NewErrNo(ServiceErrorCode, "service could not start")
+	ServiceInternalError     = NewErrNo(ServiceErrorCode, "internal service error")
+	ParamError               = NewErrNo(ParamErrorCode, "invalid parameters")
 	AuthorizationFailedError = NewErrNo(AuthorizationFailedErrCode, "authorization failed")
 
 	// User
-	UserExistedError = NewErrNo(ParamErrorCode, "user existed")
+	UserExistedError = NewErrNo(ParamErrorCode, "user already exists")
 
 	// Comment
-	UnexpectedTypeError = NewErrNo(UnexpectedTypeErrorCode, "unexpected type")
-	NotImplementError   = NewErrNo(NotImplementErrorCode, "not implement")
+	UnexpectedTypeError = NewErrNo(UnexpectedTypeErrorCode, "unexpected action type")
+	NotImplementError   = NewErrNo(NotImplementErrorCode, "not implemented")
 
 	// Favorite
-	LikeNoExistError      = NewErrNo(LikeNoExistErrorCode, "you did not like the video")
-	LikeAlreadyExistError = NewErrNo(LikeAlreadyExistErrorCode, "you already like the video")
+	LikeNoExistError      = NewErrNo(LikeNoExistErrorCode, "you have not liked this video")
+	LikeAlreadyExistError = NewErrNo(LikeAlreadyExistErrorCode, "you have already liked this video")
 
 	// Video
-	FileUploadError = NewErrNo(FileUploadErrorCode, "upload meet error")
-	NotVideoFile    = NewErrNo(FileUploadError.ErrorCode, "not video file")
+	FileUploadError = NewErrNo(FileUploadErrorCode, "file upload failed")
+	NotVideoFile    = NewErrNo(FileUploadError.ErrorCode, "uploaded file is not a video")
 
 	// Follow
-	FollowYourselfError = NewErrNo(FollowYourselfErrorCode, "you should not follow yourself")
+	FollowYourselfError = NewErrNo(FollowYourselfErrorCode, "you cannot follow yourself")
 	NotFollowError      = NewErrNo(NotFollowErrorCode, "you are not following this user")
-	AlreadyFollowError  = NewErrNo(AlreadyFollowErrorCode, "you already follow this user")
+	AlreadyFollowError  = NewErrNo(AlreadyFollowErrorCode, "you are already following this user")
 	UserNotFoundError   = NewErrNo(ParamErrorCode, "user not found")
 
 	// Chat
-	CharacterLimitError = NewErrNo(CharacterLimitErrorCode, "character limit error")
+	CharacterLimitError = NewErrNo(CharacterLimitErrorCode, "invalid message length")
 )

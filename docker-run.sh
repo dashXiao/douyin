@@ -31,7 +31,7 @@ remove_container() {
         docker unpause "$1"
         docker stop "$1"
     fi
-    echo "Remove container $1..."
+    echo "Removing container $1..."
     docker rm "$1"
 }
 

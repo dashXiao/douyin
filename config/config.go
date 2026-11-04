@@ -27,7 +27,7 @@ func Init(path string, service string) {
 	etcdAddr := os.Getenv("ETCD_ADDR")
 
 	if etcdAddr == "" {
-		panic(errors.New("not found etcd addr in env"))
+		panic(errors.New("ETCD_ADDR environment variable is required"))
 	}
 
 	Etcd = &etcd{Addr: etcdAddr}

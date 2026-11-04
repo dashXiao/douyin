@@ -74,7 +74,7 @@ func main() {
 		}),
 		hertzSentinel.WithServerBlockFallback(func(ctx context.Context, c *app.RequestContext) {
 			c.AbortWithStatusJSON(400, hertzUtils.H{
-				"status_msg":  "too many request; the quota used up",
+				"status_msg":  "request rate limit exceeded",
 				"status_code": -1,
 			})
 		}),
