@@ -63,7 +63,7 @@ const (
 	ConnMaxLifetime = 10 * time.Second
 
 	// Aliyun SDK
-	UplaodRoutines = 3 // 并发数量
+	UplaodRoutines = 3 // Number of concurrent upload workers
 	PartSize       = 100 * 1024
 
 	// page

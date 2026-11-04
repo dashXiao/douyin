@@ -17,16 +17,16 @@ type UserServiceImpl struct{}
 func (s *UserServiceImpl) Register(ctx context.Context, req *user.RegisterRequest) (resp *user.RegisterResponse, err error) {
 	resp = new(user.RegisterResponse)
 
-	// 对传入的数据做判断
+	// Validate the request parameters.
 	if len(req.Username) == 0 || len(req.Username) > 255 || len(req.Password) == 0 || len(req.Password) > 255 {
 		resp.Base = pack.BuildBaseResp(errno.ParamError)
 		return resp, nil
 	}
 
-	// 发给业务层
+	// Delegate user creation to the service layer.
 	userResp, err := service.NewUserService(ctx).CreateUser(req)
 
-	// 包装返回值
+	// Build the RPC response.
 	if err != nil {
 		resp.Base = pack.BuildBaseResp(err)
 		return resp, nil
@@ -83,7 +83,7 @@ func (s *UserServiceImpl) Info(ctx context.Context, req *user.InfoRequest) (resp
 		return resp, nil
 	}
 
-	// 校验token
+	// Validate the authentication token.
 	if _, err := utils.CheckToken(req.Token); err != nil {
 		resp.Base = pack.BuildBaseResp(errno.AuthorizationFailedError)
 		return resp, nil

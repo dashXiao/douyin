@@ -8,11 +8,11 @@ import (
 	"tiktok/services/chat/dal/mq"
 )
 
-// Get Messages history list
+// GetMessages retrieves the conversation history, ordered from newest to oldest.
 func (c *ChatService) GetMessages(req *chat.MessageListRequest, user_id int64) ([]*db.Message, error) {
 	mq.Mu.Lock()
 	defer mq.Mu.Unlock()
-	// MySQL search
+	// Retrieve persisted messages from MySQL.
 	messages, err := db.GetMessageList(c.ctx, req.ToUserId, user_id)
 	if err != nil {
 		return nil, err

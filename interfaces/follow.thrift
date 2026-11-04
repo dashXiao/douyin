@@ -21,13 +21,13 @@ struct User {
 struct FriendUser {
     1: required User user,
     2: optional string message,
-    3: required i64 msgType, // 0 => 当前请求用户接收的消息 1=>当前请求用户发送的消息
+    3: required i64 msgType, // 0: received by the current user; 1: sent by the current user
 }
 
 struct ActionRequest {
     1: required string token
     2: required i64 to_user_id
-    3: required i64 action_type // 1-关注, 2-取消关注
+    3: required i64 action_type // 1: follow; 2: unfollow
 }
 
 struct ActionResponse {

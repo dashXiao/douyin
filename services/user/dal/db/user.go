@@ -9,6 +9,7 @@ import (
 	"tiktok/pkg/errno"
 )
 
+// User stores account fields; the user service assembles social and video statistics.
 type User struct {
 	Id              int64
 	Username        string
@@ -20,14 +21,6 @@ type User struct {
 	UpdatedAt       time.Time
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
 }
-
-/*
-
-TODO: follow_count, follower_count, is_follow, work_count, favorite_count, total_favorited(string)
-
-很迷的, 我觉得很多东西不需要
-
-*/
 
 func CreateUser(ctx context.Context, user *User) (*User, error) {
 	userResp := new(User)

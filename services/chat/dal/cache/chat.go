@@ -6,7 +6,7 @@ import (
 )
 
 func MessageInsert(ctx context.Context, key string, revkey string, stamp_key int64, field string) error {
-	// 先判断是否key是否存在，如果存在则判断过期时间是否小于十天，小于则加时间，大于则不加时间
+	// For an existing conversation, extend its expiration when fewer than ten days remain.
 	if ok := MessageExist(ctx, key); ok != 0 {
 		err := RedisDB.HSet(ctx, key, stamp_key, field).Err()
 		if err != nil {
@@ -28,7 +28,7 @@ func MessageInsert(ctx context.Context, key string, revkey string, stamp_key int
 			return nil
 		}
 	}
-	// 不存在则直接add然后加时间
+	// Insert the message and apply a 30-day expiration to both conversation keys.
 	err := RedisDB.HSet(ctx, key, stamp_key, field).Err()
 	if err != nil {
 		return err

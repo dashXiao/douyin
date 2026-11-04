@@ -61,13 +61,13 @@ func main() {
 		server.WithMaxRequestBodySize(1<<31),
 	)
 
-	// Recovery 错误恢复
+	// Recover from panics in HTTP handlers.
 	r.Use(recovery.Recovery(recovery.WithRecoveryHandler(recoveryHandler)))
 
 	// Gzip
 	r.Use(gzip.Gzip(gzip.BestSpeed))
 
-	// Sentinel 流量治理
+	// Apply Sentinel request rate limits.
 	r.Use(hertzSentinel.SentinelServerMiddleware(
 		hertzSentinel.WithServerResourceExtractor(func(c context.Context, ctx *app.RequestContext) string {
 			return "api"

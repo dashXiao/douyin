@@ -10,10 +10,10 @@ import (
 )
 
 func (s *VideoService) GetPublishVideoInfo(req *video.GetPublishListRequest) ([]db.Video, []*user.User, []int64, []int64, []bool, error) {
-	// ***获取视频的功能上存在大量耦合；返回列表意义不明确***
+	// TODO: share video-enrichment logic and replace parallel return slices with a result type.
 	videoList, err := db.GetVideoInfoByUid(s.ctx, req.UserId)
 
-	// 创建错误组
+	// Collect errors from concurrent operations.
 	var eg errgroup.Group
 	type result struct {
 		userInfo      *user.User
@@ -24,11 +24,11 @@ func (s *VideoService) GetPublishVideoInfo(req *video.GetPublishListRequest) ([]
 
 	results := make([]result, len(videoList))
 
-	// 并发调用获取user信息、favoriteCount、commentCount和isFavorite
+	// Enrich videos concurrently with author details, like counts, comment counts, and like status.
 	for i := 0; i < len(videoList); i++ {
-		index := i // 在闭包中使用本地副本以避免竞态条件
+		index := i // Capture a separate index for each goroutine.
 		eg.Go(func() error {
-			// 获取user信息
+			// Retrieve the video author.
 			userInfo, err := rpc.GetUser(s.ctx, &user.InfoRequest{
 				UserId: videoList[index].UserID,
 				Token:  req.Token,
@@ -36,7 +36,7 @@ func (s *VideoService) GetPublishVideoInfo(req *video.GetPublishListRequest) ([]
 			if err != nil {
 				return err
 			}
-			// 获取favoriteCount
+			// Retrieve the video's like count.
 			favoriteCount, err := rpc.GetVideoFavoriteCount(s.ctx, &interaction.VideoFavoritedCountRequest{
 				VideoId: videoList[index].Id,
 				Token:   req.Token,
@@ -44,7 +44,7 @@ func (s *VideoService) GetPublishVideoInfo(req *video.GetPublishListRequest) ([]
 			if err != nil {
 				return err
 			}
-			// 获取commentCount
+			// Retrieve the video's comment count.
 			commentCount, err := rpc.GetCommentCount(s.ctx, &interaction.CommentCountRequest{
 				VideoId: videoList[index].Id,
 				Token:   &req.Token,
@@ -52,7 +52,7 @@ func (s *VideoService) GetPublishVideoInfo(req *video.GetPublishListRequest) ([]
 			if err != nil {
 				return err
 			}
-			// 获取isFavorite
+			// Retrieve the like status for the requested user.
 			isFavorite, err := rpc.GetVideoIsFavorite(s.ctx, &interaction.InteractionServiceIsFavoriteArgs{Req: &interaction.IsFavoriteRequest{
 				UserId:  videoList[index].UserID,
 				VideoId: videoList[index].Id,
@@ -71,7 +71,7 @@ func (s *VideoService) GetPublishVideoInfo(req *video.GetPublishListRequest) ([]
 		})
 	}
 
-	// 等待所有goroutine完成
+	// Wait for all enrichment goroutines to finish.
 	if err := eg.Wait(); err != nil {
 		return nil, nil, nil, nil, nil, err
 	}

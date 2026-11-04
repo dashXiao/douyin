@@ -1,11 +1,11 @@
-# NOTICE: copy and rename this file to config.yaml
-# NOTICE: some cofig need to complete
+# Copy this template to config/config.yaml and customize it before startup.
+# See start_steps.md for Docker container addresses and setup instructions.
 
 
-# nodes ony need to set this item
+# The container entrypoint uses this address to set ETCD_ADDR.
 etcd-addr: 172.16.232.8:2379
 
-# etcd server need to complete these items
+# Publish the shared settings below to etcd at /config/config.yaml.
 server:
   jwt-secret: MTAxNTkwMTg1Mw==
   version: "1.0"
@@ -22,7 +22,7 @@ mysql:
   password: tiktok
   charset: utf8mb4
 
-# you need to complete this config to use video service
+# Configure Alibaba Cloud OSS credentials and a bucket for video operations.
 oss:
   endpoint:
   accessKey-id:
@@ -44,7 +44,7 @@ redis:
   addr: 127.0.0.1:6379
   password: tiktok
 
-# if you deploy in different machines, remember to modify IP.
+# Use addresses that each service can bind to and other containers can reach.
 services:
   api:
     name: api

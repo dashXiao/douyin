@@ -45,7 +45,7 @@ func VideoList(data []db.Video, userList []*user.User, favoriteCountList []int64
 	return videoList
 }
 
-// 用于获取喜欢列表 IsFavorite保证为true
+// VideoLiked builds a liked-video response with IsFavorite set to true.
 func VideoLiked(data *db.Video, user *user.User, favoriteCount int64, commentCount int64) *video.Video {
 	if data == nil {
 		return nil
@@ -84,14 +84,14 @@ func VideoLikedList(data []db.Video, userList []*user.User, favoriteCountList []
 }
 func GenerateVideoName(userID int64) string {
 	currentTime := time.Now()
-	// 获取年月日和小时分钟
+	// Build the timestamp portion of the object name.
 	year, month, day := currentTime.Date()
 	hour, minute := currentTime.Hour(), currentTime.Minute()
 	return fmt.Sprintf("%v_%d%02d%02d_%02d%02d_video.mp4", userID, year, month, day, hour, minute)
 }
 func GenerateCoverName(userID int64) string {
 	currentTime := time.Now()
-	// 获取年月日和小时分钟
+	// Build the timestamp portion of the object name.
 	year, month, day := currentTime.Date()
 	hour, minute := currentTime.Hour(), currentTime.Minute()
 	return fmt.Sprintf("%v_%d%02d%02d_%02d%02d_cover.jpg", userID, year, month, day, hour, minute)

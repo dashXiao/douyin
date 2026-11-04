@@ -14,7 +14,7 @@ type Follow struct {
 	Id        int64
 	UserID    int64
 	ToUserID  int64
-	Status    int64 // 1-关注, 2-取消关注
+	Status    int64 // 1: follow; 2: unfollow
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
@@ -22,16 +22,16 @@ type Follow struct {
 
 var RecordNotFound = gorm.ErrRecordNotFound
 
-// 关注
+// FollowAction creates or reactivates a follow relationship.
 func FollowAction(ctx context.Context, follow *Follow) error {
 	followResp := new(Follow)
 
-	// 查询db中是否存在记录(判断是否是第一次操作)
+	// Check whether this pair of users has an existing follow record.
 	err := DB.WithContext(ctx).Model(&Follow{}).
 		Where("user_id= ? AND to_user_id = ?", follow.UserID, follow.ToUserID).
 		First(&followResp).Error
 
-	// db中查询不到,创建关注
+	// Create a follow record if none exists.
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		follow.Id = SF.NextVal()
 		follow.Status = 1
@@ -40,7 +40,7 @@ func FollowAction(ctx context.Context, follow *Follow) error {
 		return err
 	}
 
-	// db中存在,修改Status
+	// Reactivate the existing follow record.
 	err = DB.WithContext(ctx).Model(&Follow{}).
 		Where("user_id= ? AND to_user_id = ?", follow.UserID, follow.ToUserID).
 		Update("status", constants.FollowAction).Error
@@ -51,7 +51,7 @@ func FollowAction(ctx context.Context, follow *Follow) error {
 	return nil
 }
 
-// 取消关注
+// UnFollowAction marks the follow relationship as inactive.
 func UnFollowAction(ctx context.Context, follow *Follow) error {
 	_, err := IsFollow(ctx, follow.UserID, follow.ToUserID)
 	if errors.Is(err, RecordNotFound) {
@@ -59,7 +59,7 @@ func UnFollowAction(ctx context.Context, follow *Follow) error {
 	} else if err != nil {
 		return err
 	}
-	// 修改db中的status
+	// Update the follow status in MySQL.
 	err = DB.WithContext(ctx).Model(&Follow{}).
 		Where("user_id= ? AND to_user_id = ?", follow.UserID, follow.ToUserID).
 		Update("status", constants.UnFollowAction).Error
@@ -70,11 +70,11 @@ func UnFollowAction(ctx context.Context, follow *Follow) error {
 	return nil
 }
 
-// 关注列表(获取to_user_id的列表)
+// FollowListAction returns the IDs of accounts followed by the user.
 func FollowListAction(ctx context.Context, uid int64) (*[]int64, error) {
 	var followList []int64
 
-	// redis中不存在,查询db并返回结果
+	// Retrieve the user IDs from MySQL after a cache miss.
 	err := DB.WithContext(ctx).Table(constants.FollowTableName).Select("to_user_id").
 		Where("user_id = ? AND status = ?", uid, constants.FollowAction).
 		Find(&followList).Error
@@ -82,18 +82,18 @@ func FollowListAction(ctx context.Context, uid int64) (*[]int64, error) {
 		return nil, err
 	}
 
-	if len(followList) == 0 { // db中也查不到
+	if len(followList) == 0 { // No matching records were found in MySQL.
 		return nil, RecordNotFound
 	}
 
 	return &followList, nil
 }
 
-// 粉丝列表(获取user_id的列表)
+// FollowerListAction returns the IDs of the user's followers.
 func FollowerListAction(ctx context.Context, uid int64) (*[]int64, error) {
 	var followerList []int64
 
-	// redis中不存在,查询db并返回结果
+	// Retrieve the user IDs from MySQL after a cache miss.
 	err := DB.WithContext(ctx).Table(constants.FollowTableName).Select("user_id").
 		Where("to_user_id = ? AND status = ?", uid, constants.FollowAction).
 		Find(&followerList).Error
@@ -101,23 +101,23 @@ func FollowerListAction(ctx context.Context, uid int64) (*[]int64, error) {
 		return nil, err
 	}
 
-	if len(followerList) == 0 { // db中也查不到
+	if len(followerList) == 0 { // No matching records were found in MySQL.
 		return nil, RecordNotFound
 	}
 
 	return &followerList, nil
 }
 
-// 好友列表(先获取to_user_id的列表)
+// FriendListAction returns the IDs of accounts that follow each other.
 func FriendListAction(ctx context.Context, uid int64) (*[]int64, error) {
 	friendList := make([]int64, 0, 10)
-	// 先获取本人的关注列表
+	// Retrieve the accounts followed by this user.
 	tempList, err := FollowListAction(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
 
-	// 查询db中的粉丝列表
+	// Check in MySQL whether each followed account also follows this user.
 	for _, followID := range *tempList {
 		var count int64
 		err = DB.WithContext(ctx).Model(&Follow{}).
@@ -125,15 +125,15 @@ func FriendListAction(ctx context.Context, uid int64) (*[]int64, error) {
 			Count(&count).Error
 		if err != nil {
 			return nil, err
-		} else if count == 0 { // 查无此纪录，说明不是好友，只是单方面关注
+		} else if count == 0 { // Skip accounts that do not follow this user back.
 			continue
 		}
 
-		// 粉丝列表存在就直接添加这个id
+		// Include the account when the follow relationship is mutual.
 		friendList = append(friendList, followID)
 	}
 
-	if len(friendList) == 0 { // db中也查不到
+	if len(friendList) == 0 { // No matching records were found in MySQL.
 		return nil, RecordNotFound
 	}
 
@@ -172,7 +172,7 @@ func IsFollow(ctx context.Context, uid, tid int64) (bool, error) {
 		First(&followModel).Error
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) { // db中也查不到
+		if errors.Is(err, gorm.ErrRecordNotFound) { // No matching records were found in MySQL.
 			return false, RecordNotFound
 		}
 		return false, err

@@ -9,7 +9,7 @@ import (
 	"tiktok/pkg/errno"
 )
 
-// 判断关注数据是否存在于redis
+// IsFollow checks whether the follow relationship exists in Redis.
 func IsFollow(ctx context.Context, uid, tid int64) (bool, error) {
 	exist, err := RedisClient.SIsMember(ctx, FollowListKey(uid), strconv.FormatInt(tid, 10)).Result()
 
@@ -21,20 +21,20 @@ func IsFollow(ctx context.Context, uid, tid int64) (bool, error) {
 }
 
 func FollowAction(ctx context.Context, uid, tid int64) error {
-	exist, err := IsFollow(ctx, uid, tid) // 查询数据是否存在于redis中
+	exist, err := IsFollow(ctx, uid, tid) // Check the cached follow relationship.
 	if err != nil {
 		return err
-	} else if exist { // 存在说明已关注
+	} else if exist { // The user already follows this account.
 		return errno.AlreadyFollowError
 	}
 
-	// 不存在，进行关注操作
-	err = RedisClient.SAdd(ctx, FollowListKey(uid), strconv.FormatInt(tid, 10)).Err() // 自己的关注列表
+	// Add the follow relationship to both Redis sets.
+	err = RedisClient.SAdd(ctx, FollowListKey(uid), strconv.FormatInt(tid, 10)).Err() // The current user's following list
 	if err != nil {
 		return err
 	}
 
-	err = RedisClient.SAdd(ctx, FollowerListKey(tid), strconv.FormatInt(uid, 10)).Err() // 对方的粉丝列表
+	err = RedisClient.SAdd(ctx, FollowerListKey(tid), strconv.FormatInt(uid, 10)).Err() // The target user's follower list
 	if err != nil {
 		return err
 	}
@@ -42,20 +42,20 @@ func FollowAction(ctx context.Context, uid, tid int64) error {
 }
 
 func UnFollowAction(ctx context.Context, uid, tid int64) error {
-	exist, err := IsFollow(ctx, uid, tid) // 查询数据是否存在于redis中
+	exist, err := IsFollow(ctx, uid, tid) // Check the cached follow relationship.
 	if err != nil {
 		return err
-	} else if !exist { // redis中不存在,说明并未关注
+	} else if !exist { // The user does not follow this account.
 		return errno.NotFollowError
 	}
 
-	// 从对方的粉丝列表移除
+	// Remove the current user from the target user's follower list.
 	err = RedisClient.SRem(ctx, FollowerListKey(tid), strconv.FormatInt(uid, 10)).Err()
 	if err != nil {
 		return err
 	}
 
-	// 从自己的关注列表移除
+	// Remove the target user from the current user's following list.
 	err = RedisClient.SRem(ctx, FollowListKey(uid), strconv.FormatInt(tid, 10)).Err()
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func FollowListAction(ctx context.Context, uid int64) (*[]int64, error) {
 
 	key := FollowListKey(uid)
 
-	// 查询redis
+	// Read the cached user IDs from Redis.
 	idList, err := RedisClient.SMembers(ctx, key).Result()
 	if errors.Is(err, redis.Nil) {
 	} else if err != nil {
@@ -99,7 +99,7 @@ func FollowerListAction(ctx context.Context, uid int64) (*[]int64, error) {
 
 	key := FollowerListKey(uid)
 
-	// 查询redis
+	// Read the cached user IDs from Redis.
 	idList, err := RedisClient.SMembers(ctx, key).Result()
 	if err == redis.Nil {
 	} else if err != nil {
@@ -127,18 +127,18 @@ func UpdateFollowerList(ctx context.Context, uid int64, followerList *[]int64) e
 
 func FriendListAction(ctx context.Context, uid int64) (*[]int64, error) {
 	friendList := make([]int64, 0, 10)
-	// 先获取本人的关注列表
+	// Retrieve the accounts followed by this user.
 	tempList, err := FollowListAction(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
 
-	// 查询redis中的粉丝列表
+	// Check whether each followed account also follows this user.
 	for _, followID := range *tempList {
 		b, err := RedisClient.SIsMember(ctx, FollowerListKey(uid), followID).Result()
 		if err != nil {
 			return nil, err
-		} else if !b { // 粉丝列表不存在，说明只是单方面关注，不是好友
+		} else if !b { // Skip accounts that do not follow this user back.
 			continue
 		}
 		friendList = append(friendList, followID)

@@ -9,7 +9,7 @@ import (
 )
 
 func (s *FollowService) IsFollow(req *follow.IsFollowRequest) (bool, error) {
-	// 先进入redis中判断是否有关注
+	// Check the follow relationship in Redis first.
 	ex1, err := cache.IsFollow(s.ctx, req.UserId, req.ToUserId)
 
 	if err != nil {

@@ -48,10 +48,10 @@ message FeedResponse{
 }
 
 message UploadVideoRequest{
-    bytes video_file = 1; // 视频文件
-    string title = 2;      // 视频标题
+    bytes video_file = 1; // Video file contents
+    string title = 2;      // Video title
     string token = 3;      // token
-    optional bytes cover_file = 4; // 可选的用户上传封面
+    optional bytes cover_file = 4; // Optional cover image supplied by the user
 }
 
 message UploadVideoResponse{
@@ -59,13 +59,13 @@ message UploadVideoResponse{
 }
 
 message GetFavoriteVideoInfoRequest{
-    repeated int64 video_id = 1;  //需要获取的video_id
+    repeated int64 video_id = 1;  // IDs of the videos to retrieve
     string token = 2;             //token
 }
 
 message GetFavoriteVideoInfoResponse{
     BaseResp base = 1;
-    repeated Video video_list = 2; //获取的video信息
+    repeated Video video_list = 2; // Retrieved video details
 }
 
 message GetPublishListRequest{
@@ -85,7 +85,7 @@ message GetWorkCountRequest{
 
 message GetWorkCountResponse{
     BaseResp base = 1;
-    int64 work_count = 2; // 作品数量
+    int64 work_count = 2; // Number of published videos
 }
 
 message GetVideoIDByUidRequset{

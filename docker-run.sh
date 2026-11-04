@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# create folder
+# Create local data and configuration directories.
 mkdir -p data/mysql
 mkdir -p data/redis
 mkdir -p data/zookeeper/data
@@ -14,7 +14,7 @@ mkdir -p config/kafka
 mkdir -p config/etcd
 
 IMAGE_NAME="tiktok"
-SERVICE_TO_START=${1:-all} # default start all
+SERVICE_TO_START=${1:-all} # Start all services by default.
 
 
 DIR=$(cd $(dirname $0); pwd)

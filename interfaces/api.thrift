@@ -45,7 +45,7 @@ struct FriendUser {
     9: optional i64 total_favorited,
     10: optional i64 work_count,
     12: optional string message,
-    13: required i64 msgType, // 0 => 当前请求用户接收的消息 1=>当前请求用户发送的消息
+    13: required i64 msgType, // 0: received by the current user; 1: sent by the current user
 }
 
 struct Message {
@@ -132,7 +132,7 @@ struct PublishListResponse {
 struct FavoriteActionRequest {
     1: required string token,
     2: required i64 video_id,
-    3: required i64 action_type, // 1-点赞, 2-取消点赞
+    3: required i64 action_type, // 1: like; 2: unlike
 }
 
 struct FavoriteActionResponse {
@@ -162,7 +162,7 @@ struct CommentActionRequest {
 struct CommentActionResponse {
     1: required i64 status_code = 0,
     2: optional string status_msg,
-    3: optional Comment comment, // 评论成功才返回
+    3: optional Comment comment, // Returned only when a comment is created successfully
 }
 
 struct CommentListRequest {
@@ -181,7 +181,7 @@ struct CommentListResponse {
 struct RelationActionRequest {
     1: required string token,
     2: required i64 to_user_id,
-    3: required i64 action_type, // 1-关注, 2-取消关注
+    3: required i64 action_type, // 1: follow; 2: unfollow
 }
 
 struct RelationActionResponse {
@@ -225,7 +225,7 @@ struct RelationFriendListResponse {
 struct MessageChatRequest {
     1: required string token,
     2: required i64 to_user_id,
-    // 3: required i64 pre_msg_time, // 上次最新消息的时间
+    // 3: required i64 pre_msg_time, // Timestamp of the most recent message from the previous request
 }
 
 struct MessageChatResponse {

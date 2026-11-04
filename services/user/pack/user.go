@@ -6,6 +6,7 @@ import (
 	"tiktok/services/user/dal/db"
 )
 
+// User copies account fields; the user service adds social and video statistics.
 func User(data *db.User) *user.User {
 	if data == nil {
 		return nil
@@ -18,6 +19,4 @@ func User(data *db.User) *user.User {
 		BackgroundImage: data.BackgroundImage,
 		Signature:       data.Signature,
 	}
-
-	// TODO: follow_count, follower_count, is_follow, work_count, favorite_count, total_favorited(string)
 }

@@ -18,10 +18,10 @@ func Init() {
 	DB, err = gorm.Open(mysql.Open(utils.GetMysqlDSN()),
 		&gorm.Config{
 			PrepareStmt:            true,
-			SkipDefaultTransaction: true,                                // 禁用默认事务
-			Logger:                 logger.Default.LogMode(logger.Info), // 设置日志模式
+			SkipDefaultTransaction: true,                                // Disable default transactions.
+			Logger:                 logger.Default.LogMode(logger.Info), // Log database queries.
 			NamingStrategy: schema.NamingStrategy{
-				SingularTable: true, // 使用单数表名
+				SingularTable: true, // Use singular table names.
 			},
 		})
 
@@ -35,9 +35,9 @@ func Init() {
 		panic(err)
 	}
 
-	sqlDB.SetMaxIdleConns(constants.MaxIdleConns)       // 最大闲置连接数
-	sqlDB.SetMaxOpenConns(constants.MaxConnections)     // 最大连接数
-	sqlDB.SetConnMaxLifetime(constants.ConnMaxLifetime) // 最大可复用时间
+	sqlDB.SetMaxIdleConns(constants.MaxIdleConns)       // Maximum idle connections
+	sqlDB.SetMaxOpenConns(constants.MaxConnections)     // Maximum open connections
+	sqlDB.SetConnMaxLifetime(constants.ConnMaxLifetime) // Maximum connection lifetime
 
 	SF, err = utils.NewSnowflake(constants.SnowflakeDatacenterID, constants.SnowflakeWorkerID)
 	if err != nil {

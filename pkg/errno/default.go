@@ -1,4 +1,4 @@
-// This file is be designed to define any common error so that we can use it in any service simply.
+// Shared errors used by the business services.
 
 package errno
 

@@ -10,10 +10,10 @@ import (
 )
 
 func (s *VideoService) GetFavoriteVideoInfo(req *video.GetFavoriteVideoInfoRequest) ([]db.Video, []*user.User, []int64, []int64, error) {
-	// 和 FeedVideo 存在大量耦合 bad!!!
+	// TODO: share the video-enrichment logic with FeedVideo.
 	videoList, err := db.GetVideoInfoByID(s.ctx, req.VideoId)
 
-	// 创建错误组
+	// Collect errors from concurrent operations.
 	var eg errgroup.Group
 	type result struct {
 		userInfo      *user.User
@@ -21,11 +21,11 @@ func (s *VideoService) GetFavoriteVideoInfo(req *video.GetFavoriteVideoInfoReque
 		commentCount  int64
 	}
 	results := make([]result, len(videoList))
-	// 并发调用获取user信息、favoriteCount和commentCount
+	// Enrich videos concurrently with author details, like counts, and comment counts.
 	for i := 0; i < len(videoList); i++ {
-		index := i // 在闭包中使用本地副本以避免竞态条件
+		index := i // Capture a separate index for each goroutine.
 		eg.Go(func() error {
-			// 获取user信息
+			// Retrieve the video author.
 			userInfo, err := rpc.GetUser(s.ctx, &user.InfoRequest{
 				UserId: videoList[index].UserID,
 				Token:  req.Token,
@@ -34,7 +34,7 @@ func (s *VideoService) GetFavoriteVideoInfo(req *video.GetFavoriteVideoInfoReque
 				return err
 			}
 
-			// 获取favoriteCount
+			// Retrieve the video's like count.
 			favoriteCount, err := rpc.GetVideoFavoriteCount(s.ctx, &interaction.VideoFavoritedCountRequest{
 				VideoId: videoList[index].Id,
 				Token:   req.Token,
@@ -43,7 +43,7 @@ func (s *VideoService) GetFavoriteVideoInfo(req *video.GetFavoriteVideoInfoReque
 				return err
 			}
 
-			// 获取commentCount
+			// Retrieve the video's comment count.
 			commentCount, err := rpc.GetCommentCount(s.ctx, &interaction.CommentCountRequest{
 				VideoId: videoList[index].Id,
 				Token:   &req.Token,
@@ -59,7 +59,7 @@ func (s *VideoService) GetFavoriteVideoInfo(req *video.GetFavoriteVideoInfoReque
 			return nil
 		})
 	}
-	// 等待所有goroutine完成
+	// Wait for all enrichment goroutines to finish.
 	if err := eg.Wait(); err != nil {
 		return nil, nil, nil, nil, err
 	}

@@ -40,10 +40,7 @@ func (s *MessageServiceImpl) MessageList(ctx context.Context, req *chat.MessageL
 		resp.Base = pack.BuildBaseResp(errno.AuthorizationFailedError)
 		return resp, err
 	}
-	// 获取消息列表
-
-	// redis->mysql
-	// redis中存在则返回，不存在查询mysql,
+	// Read persisted messages directly from MySQL.
 	messageList, err := service.NewChatService(ctx).GetMessages(req, claim.UserId)
 	if err != nil {
 		resp.Base = pack.BuildBaseResp(err)

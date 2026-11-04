@@ -34,7 +34,7 @@ func Init() {
 }
 
 func main() {
-	Init() // 做一些中间件的初始化
+	Init() // Initialize configuration, data access, and RPC clients.
 
 	r, err := etcd.NewEtcdRegistry([]string{config.Etcd.Addr})
 

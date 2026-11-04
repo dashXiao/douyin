@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# wait etcd complete
+# Wait until etcd is ready.
 while true; do
   if etcdctl endpoint health; then
     echo "etcd is ready."
@@ -10,11 +10,11 @@ while true; do
   sleep 1
 done
 
-# upload config
+# Publish the initial configuration.
 etcdctl put /config/config.yaml -- < /config/config.yaml
 
 
-# continuous listen
+# Watch for configuration changes.
 previous_hash=$(sha256sum /config/config.yaml | awk '{print $1}')
 
 while true; do

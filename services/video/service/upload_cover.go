@@ -10,14 +10,14 @@ import (
 )
 
 func (s *VideoService) UploadCover(req *video.UploadVideoRequest, coverName string) (err error) {
-	// 用户上传了封面，直接存储
+	// Store a user-supplied cover without generating a thumbnail.
 	if len(req.CoverFile) > 0 {
 		return s.bucket.PutObject(config.OSS.MainDirectory+"/"+coverName, bytes.NewReader(req.CoverFile))
 	}
 
-	var imageBuffer bytes.Buffer // 接收图像输出
+	var imageBuffer bytes.Buffer // Capture the generated image.
 
-	// 使用 stdin/stdout 管道截取首帧，避免命名管道的阻塞问题
+	// Extract the first frame through stdin/stdout to avoid blocking on named pipes.
 	cmd := exec.Command("ffmpeg", "-i", "pipe:0", "-vframes", "1", "-f", "image2pipe", "-vcodec", "png", "pipe:1")
 	cmd.Stdin = bytes.NewReader(req.VideoFile)
 	cmd.Stdout = &imageBuffer

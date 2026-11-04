@@ -1,26 +1,26 @@
-// This file is designed to define any error code
+// Shared status and error codes for the API gateway and business services.
 package errno
 
 const (
-	// For api-gateway
+	// API gateway success response.
 	StatusSuccessCode = 0
 	StatusSuccessMsg  = "ok"
 
-	// For microservices
+	// RPC success response.
 	SuccessCode = 10000
 	SuccessMsg  = "ok"
 
-	// Error
-	ServiceErrorCode           = 10001 // 未知微服务错误
-	ParamErrorCode             = 10002 // 参数错误
-	AuthorizationFailedErrCode = 10003 // 鉴权失败
-	UnexpectedTypeErrorCode    = 10004 // 未知类型
-	NotImplementErrorCode      = 10005 // 未实装
-	LikeAlreadyExistErrorCode  = 10007 // 已点赞
-	LikeNoExistErrorCode       = 10008 // 未点赞
-	FileUploadErrorCode        = 10009 // 文件上传
-	FollowYourselfErrorCode    = 10010 // 关注自己
-	NotFollowErrorCode         = 10011 // 尚未取关
-	AlreadyFollowErrorCode     = 10012 // 已经关注
-	CharacterLimitErrorCode    = 10013 // 消息字数错误
+	// Error codes.
+	ServiceErrorCode           = 10001 // Unknown microservice error
+	ParamErrorCode             = 10002 // Invalid parameters
+	AuthorizationFailedErrCode = 10003 // Authorization failed
+	UnexpectedTypeErrorCode    = 10004 // Unexpected action type
+	NotImplementErrorCode      = 10005 // Not implemented
+	LikeAlreadyExistErrorCode  = 10007 // Video already liked
+	LikeNoExistErrorCode       = 10008 // Video not liked
+	FileUploadErrorCode        = 10009 // File upload failed
+	FollowYourselfErrorCode    = 10010 // Cannot follow yourself
+	NotFollowErrorCode         = 10011 // Not following this user
+	AlreadyFollowErrorCode     = 10012 // Already following this user
+	CharacterLimitErrorCode    = 10013 // Invalid message length
 )

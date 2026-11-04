@@ -82,7 +82,7 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 	userId := claim.UserId
 
 	switch req.ActionType {
-	// 1-发布评论
+	// 1: create a comment
 	case constants.AddComment:
 
 		if req.CommentText == nil || len(*req.CommentText) == 0 || len(*req.CommentText) > 255 {
@@ -99,7 +99,7 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 
 		resp.Comment = commentResp
 
-	// 2-删除评论
+	// 2: delete a comment
 	case constants.DeleteComment:
 
 		if req.CommentId == nil {
@@ -129,7 +129,7 @@ func (s *InteractionServiceImpl) CommentAction(ctx context.Context, req *interac
 func (s *InteractionServiceImpl) CommentList(ctx context.Context, req *interaction.CommentListRequest) (resp *interaction.CommentListResponse, err error) {
 	resp = new(interaction.CommentListResponse)
 
-	// 校验token
+	// Validate the authentication token.
 	if _, err = utils.CheckToken(req.Token); err != nil {
 		resp.Base = pack.BuildBaseResp(errno.AuthorizationFailedError)
 		return resp, nil
@@ -151,7 +151,7 @@ func (s *InteractionServiceImpl) CommentList(ctx context.Context, req *interacti
 func (s *InteractionServiceImpl) CommentCount(ctx context.Context, req *interaction.CommentCountRequest) (resp *interaction.CommentCountResponse, err error) {
 	resp = new(interaction.CommentCountResponse)
 
-	// 校验token
+	// Validate the authentication token.
 	if req.Token != nil {
 		if _, err = utils.CheckToken(*req.Token); err != nil {
 			resp.Base = pack.BuildBaseResp(errno.AuthorizationFailedError)

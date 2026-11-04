@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# create folder
+# Create local infrastructure data directories.
 mkdir -p data/mysql
 mkdir -p data/redis
 mkdir -p data/zookeeper/data

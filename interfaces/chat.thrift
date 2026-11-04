@@ -25,12 +25,12 @@ struct MessagePostResponse {
 
 struct MessageListRequest {
     1: required string token,
-    2: required i64 to_user_id,    //  ->对方用户id
+    2: required i64 to_user_id,    // ID of the other user in the conversation
 }
 
 struct MessageListResponse {      
     1: BaseResp base,
-    2: list<Message> message_list, //  ->按时间倒序排列
+    2: list<Message> message_list, // Messages ordered from newest to oldest
     3: i64 total,
 }
 

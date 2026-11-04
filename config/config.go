@@ -32,8 +32,7 @@ func Init(path string, service string) {
 
 	Etcd = &etcd{Addr: etcdAddr}
 
-	// use etcd for config save
-	// 相当于套用一下，没有用到核心功能
+	// Load shared configuration from etcd once during startup.
 	err := runtime_viper.AddRemoteProvider("etcd3", Etcd.Addr, "/config/config.yaml")
 
 	if err != nil {

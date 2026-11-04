@@ -18,14 +18,14 @@ func Init() {
 	DB, err = gorm.Open(mysql.Open(utils.GetMysqlDSN()),
 		&gorm.Config{
 			PrepareStmt:            true,
-			SkipDefaultTransaction: true, // 禁用默认事务
+			SkipDefaultTransaction: true, // Disable default transactions.
 			Logger:                 logger.Default.LogMode(logger.Info),
 			NamingStrategy: schema.NamingStrategy{
-				SingularTable: true, // 使用单数表名
+				SingularTable: true, // Use singular table names.
 			},
 		})
 
-	// TODO: 加入一些其他特性
+	// Configure the connection pool below.
 
 	if err != nil {
 		panic(err)
@@ -37,9 +37,9 @@ func Init() {
 		panic(err)
 	}
 
-	sqlDB.SetMaxIdleConns(constants.MaxIdleConns)       // 最大闲置连接数
-	sqlDB.SetMaxOpenConns(constants.MaxConnections)     // 最大连接数
-	sqlDB.SetConnMaxLifetime(constants.ConnMaxLifetime) // 最大连接时间
+	sqlDB.SetMaxIdleConns(constants.MaxIdleConns)       // Maximum idle connections
+	sqlDB.SetMaxOpenConns(constants.MaxConnections)     // Maximum open connections
+	sqlDB.SetConnMaxLifetime(constants.ConnMaxLifetime) // Maximum connection lifetime
 
 	DB = DB.Table(constants.FollowTableName)
 

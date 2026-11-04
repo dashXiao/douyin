@@ -16,7 +16,7 @@ import (
 
 // FollowerList View fan list
 func (s *FollowService) FollowerList(req *follow.FollowerListRequest) (*[]*follow.User, error) {
-	// 限流
+	// Apply the request rate limit.
 	if err := cache.Limit(s.ctx, constants.FollowerListRate, constants.Interval); err != nil {
 		return nil, err
 	}
@@ -26,25 +26,25 @@ func (s *FollowService) FollowerList(req *follow.FollowerListRequest) (*[]*follo
 	var mu sync.Mutex
 	isErr := false
 
-	// 先查redis
+	// Read from Redis first.
 	followerList, err := cache.FollowerListAction(s.ctx, req.UserId)
 	if err != nil {
 		return nil, err
-	} else if len(*followerList) == 0 { // redis中查不到再查db
+	} else if len(*followerList) == 0 { // Fall back to MySQL when the cached list is empty.
 		followerList, err = db.FollowerListAction(s.ctx, req.UserId)
-		if errors.Is(err, db.RecordNotFound) { // db中也查不到
+		if errors.Is(err, db.RecordNotFound) { // No matching records were found in MySQL.
 			return &userList, nil
 		} else if err != nil {
 			return nil, err
 		}
-		// db中查到后写入redis
+		// Populate Redis with the IDs retrieved from MySQL.
 		err := cache.UpdateFollowerList(s.ctx, req.UserId, followerList)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	// 数据处理
+	// Build the user response objects.
 	for _, id := range *followerList {
 		wg.Add(1)
 		go func(id int64, req *follow.FollowerListRequest, userList *[]*follow.User, wg *sync.WaitGroup, mu *sync.Mutex) {
@@ -63,12 +63,12 @@ func (s *FollowService) FollowerList(req *follow.FollowerListRequest) (*[]*follo
 			})
 			if err != nil {
 				mu.Lock()
-				isErr = true // 报错就修改为true
+				isErr = true // Record that a worker failed.
 				mu.Unlock()
 				return
 			}
 
-			follow := pack.User(user) // 结构体转换
+			follow := pack.User(user) // Convert the RPC user to the response type.
 
 			mu.Lock()
 			*userList = append(*userList, follow)

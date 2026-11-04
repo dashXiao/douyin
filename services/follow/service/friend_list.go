@@ -17,7 +17,7 @@ import (
 
 // FriendList Viewing friends list
 func (s *FollowService) FriendList(req *follow.FriendListRequest) (*[]*follow.FriendUser, error) {
-	// 限流
+	// Apply the request rate limit.
 	if err := cache.Limit(s.ctx, constants.FriendListRate, constants.Interval); err != nil {
 		return nil, err
 	}
@@ -27,18 +27,18 @@ func (s *FollowService) FriendList(req *follow.FriendListRequest) (*[]*follow.Fr
 	var mu sync.Mutex
 	isErr := false
 
-	// 先查redis
+	// Read from Redis first.
 	userList, err := cache.FriendListAction(s.ctx, req.UserId)
 	if err != nil {
 		return nil, err
-	} else if len(*userList) == 0 { // redis中查不到再查db
+	} else if len(*userList) == 0 { // Fall back to MySQL when the cached list is empty.
 		userList, err = db.FriendListAction(s.ctx, req.UserId)
-		if errors.Is(err, db.RecordNotFound) { // db中也查不到
+		if errors.Is(err, db.RecordNotFound) { // No matching records were found in MySQL.
 			return &friendList, nil
 		} else if err != nil {
 			return nil, err
 		}
-		// db中查到后写入redis
+		// Populate Redis with the IDs retrieved from MySQL.
 		followList, _ := db.FollowListAction(s.ctx, req.UserId)
 		followerList, _ := db.FollowerListAction(s.ctx, req.UserId)
 		err := cache.UpdateFriendList(s.ctx, req.UserId, followList, followerList)
@@ -47,7 +47,7 @@ func (s *FollowService) FriendList(req *follow.FriendListRequest) (*[]*follow.Fr
 		}
 	}
 
-	// 数据处理
+	// Build the user response objects.
 	for _, userID := range *userList {
 		wg.Add(1)
 		go func(id int64, req *follow.FriendListRequest, userList *[]*follow.FriendUser, wg *sync.WaitGroup, mu *sync.Mutex) {
@@ -66,11 +66,11 @@ func (s *FollowService) FriendList(req *follow.FriendListRequest) (*[]*follow.Fr
 			})
 			if err != nil {
 				mu.Lock()
-				isErr = true // 报错就修改为true
+				isErr = true // Record that a worker failed.
 				mu.Unlock()
 				return
 			}
-			friend := pack.User(user) // 结构体转换
+			friend := pack.User(user) // Convert the RPC user to the response type.
 
 			message, msgType, err := rpc.GetMessage(s.ctx, &chat.MessageListRequest{
 				Token:    req.Token,
@@ -78,7 +78,7 @@ func (s *FollowService) FriendList(req *follow.FriendListRequest) (*[]*follow.Fr
 			}, req.UserId, id)
 			if err != nil {
 				mu.Lock()
-				isErr = true // 报错就修改为true
+				isErr = true // Record that a worker failed.
 				mu.Unlock()
 				return
 			}

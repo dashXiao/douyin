@@ -94,7 +94,7 @@ func (s *VideoServiceImpl) GetPublishList(ctx context.Context, req *video.GetPub
 
 // GetWorkCount implements the VideoServiceImpl interface.
 func (s *VideoServiceImpl) GetWorkCount(ctx context.Context, req *video.GetWorkCountRequest) (resp *video.GetWorkCountResponse, err error) {
-	// Work??? 非常怪异的函数名。用Videos不好吗？
+	// WorkCount is the number of videos published by the user.
 	resp = new(video.GetWorkCountResponse)
 
 	if _, err := utils.CheckToken(req.Token); err != nil {
@@ -142,9 +142,9 @@ func (s *VideoServiceImpl) UploadVideo(ctx context.Context, req *video.UploadVid
 	}
 	videoName := pack.GenerateVideoName(claim.UserId)
 	coverName := pack.GenerateCoverName(claim.UserId)
-	// 创建错误组
+	// Collect errors from concurrent operations.
 	var eg errgroup.Group
-	// 上传视频
+	// Upload the video to object storage.
 	eg.Go(func() error {
 		err = service.NewVideoService(ctx).UploadVideo(req, videoName)
 		if err != nil {
@@ -152,7 +152,7 @@ func (s *VideoServiceImpl) UploadVideo(ctx context.Context, req *video.UploadVid
 		}
 		return nil
 	})
-	// 截取并上传封面
+	// Upload the supplied cover or generate one from the first video frame.
 	eg.Go(func() error {
 		err = service.NewVideoService(ctx).UploadCover(req, coverName)
 		if err != nil {
@@ -160,7 +160,7 @@ func (s *VideoServiceImpl) UploadVideo(ctx context.Context, req *video.UploadVid
 		}
 		return nil
 	})
-	// 将视频数据写入数据库
+	// Store the video metadata in MySQL.
 	eg.Go(func() error {
 		playURL := fmt.Sprintf("%s/%s/%s", config.OSS.Endpoint, config.OSS.MainDirectory, videoName)
 		coverURL := fmt.Sprintf("%s/%s/%s", config.OSS.Endpoint, config.OSS.MainDirectory, coverName)

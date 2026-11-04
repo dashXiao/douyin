@@ -1512,7 +1512,7 @@ type FriendUser struct {
 	TotalFavorited  *int64  `thrift:"total_favorited,9,optional" form:"total_favorited" json:"total_favorited,omitempty" query:"total_favorited"`
 	WorkCount       *int64  `thrift:"work_count,10,optional" form:"work_count" json:"work_count,omitempty" query:"work_count"`
 	Message         *string `thrift:"message,12,optional" form:"message" json:"message,omitempty" query:"message"`
-	// 0 => 当前请求用户接收的消息 1=>当前请求用户发送的消息
+	// 0: received by the current user; 1: sent by the current user
 	MsgType int64 `thrift:"msgType,13,required" form:"msgType,required" json:"msgType,required" query:"msgType,required"`
 }
 
@@ -5565,7 +5565,7 @@ func (p *PublishListResponse) String() string {
 type FavoriteActionRequest struct {
 	Token   string `thrift:"token,1,required" form:"token,required" json:"token,required" query:"token,required"`
 	VideoID int64  `thrift:"video_id,2,required" form:"video_id,required" json:"video_id,required" query:"video_id,required"`
-	// 1-点赞, 2-取消点赞
+	// 1: like; 2: unlike
 	ActionType int64 `thrift:"action_type,3,required" form:"action_type,required" json:"action_type,required" query:"action_type,required"`
 }
 
@@ -6878,7 +6878,7 @@ func (p *CommentActionRequest) String() string {
 type CommentActionResponse struct {
 	StatusCode int64   `thrift:"status_code,1,required" form:"status_code,required" json:"status_code,required" query:"status_code,required"`
 	StatusMsg  *string `thrift:"status_msg,2,optional" form:"status_msg" json:"status_msg,omitempty" query:"status_msg"`
-	// 评论成功才返回
+	// Returned only when a comment is created successfully
 	Comment *Comment `thrift:"comment,3,optional" form:"comment" json:"comment,omitempty" query:"comment"`
 }
 
@@ -7624,7 +7624,7 @@ func (p *CommentListResponse) String() string {
 type RelationActionRequest struct {
 	Token    string `thrift:"token,1,required" form:"token,required" json:"token,required" query:"token,required"`
 	ToUserID int64  `thrift:"to_user_id,2,required" form:"to_user_id,required" json:"to_user_id,required" query:"to_user_id,required"`
-	// 1-关注, 2-取消关注
+	// 1: follow; 2: unfollow
 	ActionType int64 `thrift:"action_type,3,required" form:"action_type,required" json:"action_type,required" query:"action_type,required"`
 }
 

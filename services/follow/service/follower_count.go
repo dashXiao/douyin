@@ -7,13 +7,13 @@ import (
 )
 
 func (s *FollowService) FollowerCount(req *follow.FollowerCountRequest) (int64, error) {
-	// 先进入redis中查询
+	// Read the count from Redis first.
 	followerCount, err := cache.FollowerCount(s.ctx, req.UserId)
 	if err != nil {
 		return -1, err
 	}
 
-	if followerCount == 0 { // redis中没查到,进入db中查
+	if followerCount == 0 { // Fall back to MySQL when the cached count is zero.
 		followerCount, err = db.FollowerCount(s.ctx, req.UserId)
 	}
 	if err != nil {

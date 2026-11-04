@@ -46,7 +46,7 @@ func GetMessageList(ctx context.Context, to_user_id int64, from_user_id int64) (
 		}
 		return nil, err
 	}
-	// 回写redis --先返回信息，然后送到mq进行异步处理
+	// Return the persisted messages ordered from newest to oldest.
 	return messageListFormMysql, nil
 }
 

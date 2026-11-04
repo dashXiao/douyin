@@ -13,9 +13,9 @@ import (
 	"tiktok/services/follow/rpc"
 )
 
-// Action Function for the follow/close operation
+// Action follows or unfollows the target user.
 func (s *FollowService) Action(req *follow.ActionRequest) error {
-	// 限流
+	// Apply the request rate limit.
 	if err := cache.Limit(s.ctx, constants.ActionRate, constants.Interval); err != nil {
 		return err
 	}
@@ -26,12 +26,12 @@ func (s *FollowService) Action(req *follow.ActionRequest) error {
 		return errno.AuthorizationFailedError
 	}
 
-	// 禁止自己关注自己
+	// Reject attempts to follow the current user's own account.
 	if claim.UserId == req.ToUserId {
 		return errno.FollowYourselfError
 	}
 
-	// 判断是否目标用户是否存在
+	// Verify that the target user exists.
 	_, err = rpc.GetUser(s.ctx, &user.InfoRequest{
 		UserId: req.ToUserId,
 		Token:  req.Token,
@@ -48,21 +48,21 @@ func (s *FollowService) Action(req *follow.ActionRequest) error {
 
 	switch req.ActionType {
 	case constants.FollowAction:
-		// 数据写入redis
+		// Update the follow relationship in Redis.
 		if err := cache.FollowAction(s.ctx, action.UserID, action.ToUserID); err != nil {
 			return err
 		}
-		// 数据写入db/更改db数据
+		// Create or reactivate the follow record in MySQL.
 		if err = db.FollowAction(s.ctx, action); err != nil {
 			return err
 		}
 	case constants.UnFollowAction:
-		// 更改db数据
+		// Mark the follow record as inactive in MySQL.
 		if err = db.UnFollowAction(s.ctx, action); err != nil {
 			return err
 		}
-		time.Sleep(10 * time.Millisecond) // 延迟删除缓存中的数据
-		// 删除redis中的数据
+		time.Sleep(10 * time.Millisecond) // Delay the cache update after the database write.
+		// Remove the follow relationship from Redis.
 		if err = cache.UnFollowAction(s.ctx, action.UserID, action.ToUserID); err != nil {
 			return err
 		}

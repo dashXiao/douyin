@@ -11,11 +11,11 @@ import (
 	"tiktok/services/user/rpc"
 )
 
-// GetUser check token and get user's info
+// GetUser retrieves account information and aggregates social and video statistics.
 func (s *UserService) GetUser(req *user.InfoRequest) (*user.User, error) {
 	var userResp *user.User
 
-	// 获取用户基本信息
+	// Retrieve the user's account information.
 	userModel, err := db.GetUserByID(s.ctx, req.UserId)
 	userResp = pack.User(userModel)
 
@@ -23,23 +23,23 @@ func (s *UserService) GetUser(req *user.InfoRequest) (*user.User, error) {
 		return nil, err
 	}
 
-	// 关注数量
-	// 调用链：here -> services/user/rpc/follow.go  followClient.FollowCount -> services/follow/handler.go FollowCount -> ...
+	// Number of followed accounts
+	// Call path: GetUser -> rpc.GetFollowCount -> followClient.FollowCount -> follow service handler.
 	userResp.FollowCount, err = rpc.GetFollowCount(s.ctx, &follow.FollowCountRequest{UserId: userModel.Id, Token: req.Token})
 
 	if err != nil {
 		return nil, err
 	}
 
-	// 粉丝数量
+	// Number of followers
 	userResp.FollowerCount, err = rpc.GetFollowerCount(s.ctx, &follow.FollowerCountRequest{UserId: userModel.Id, Token: req.Token})
 
 	if err != nil {
 		return nil, err
 	}
 
-	// 是否关注
-	claims, err := utils.CheckToken(req.Token) // 通过解析Token获取当前登录的UserId
+	// Whether the current user follows this account
+	claims, err := utils.CheckToken(req.Token) // Extract the current user ID from the token.
 
 	if err != nil {
 		return nil, err
@@ -51,14 +51,14 @@ func (s *UserService) GetUser(req *user.InfoRequest) (*user.User, error) {
 		return nil, err
 	}
 
-	// 作品数量
+	// Number of published videos
 	userResp.WorkCount, err = rpc.GetWorkCount(s.ctx, &video.GetWorkCountRequest{UserId: userModel.Id, Token: req.Token})
 
 	if err != nil {
 		return nil, err
 	}
 
-	// 获赞数量
+	// Total likes received
 	userResp.TotalFavorited, err = rpc.GetTotalFavorited(s.ctx, &interaction.UserTotalFavoritedRequest{UserId: userModel.Id, Token: req.Token})
 
 	if err != nil {

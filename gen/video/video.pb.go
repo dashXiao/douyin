@@ -429,10 +429,10 @@ type UploadVideoRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	VideoFile []byte `protobuf:"bytes,1,opt,name=video_file,json=videoFile,proto3" json:"video_file,omitempty"`       // 视频文件
-	Title     string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`                                // 视频标题
+	VideoFile []byte `protobuf:"bytes,1,opt,name=video_file,json=videoFile,proto3" json:"video_file,omitempty"`       // Video file contents
+	Title     string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`                                // Video title
 	Token     string `protobuf:"bytes,3,opt,name=token,proto3" json:"token,omitempty"`                                // token
-	CoverFile []byte `protobuf:"bytes,4,opt,name=cover_file,json=coverFile,proto3,oneof" json:"cover_file,omitempty"` // 可选的用户上传封面
+	CoverFile []byte `protobuf:"bytes,4,opt,name=cover_file,json=coverFile,proto3,oneof" json:"cover_file,omitempty"` // Optional cover image supplied by the user
 }
 
 func (x *UploadVideoRequest) Reset() {
@@ -547,7 +547,7 @@ type GetFavoriteVideoInfoRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	VideoId []int64 `protobuf:"varint,1,rep,packed,name=video_id,json=videoId,proto3" json:"video_id,omitempty"` //需要获取的video_id
+	VideoId []int64 `protobuf:"varint,1,rep,packed,name=video_id,json=videoId,proto3" json:"video_id,omitempty"` // IDs of the videos to retrieve
 	Token   string  `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`                            //token
 }
 
@@ -603,7 +603,7 @@ type GetFavoriteVideoInfoResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	Base      *BaseResp `protobuf:"bytes,1,opt,name=base,proto3" json:"base,omitempty"`
-	VideoList []*Video  `protobuf:"bytes,2,rep,name=video_list,json=videoList,proto3" json:"video_list,omitempty"` //获取的video信息
+	VideoList []*Video  `protobuf:"bytes,2,rep,name=video_list,json=videoList,proto3" json:"video_list,omitempty"` // Retrieved video details
 }
 
 func (x *GetFavoriteVideoInfoResponse) Reset() {
@@ -823,7 +823,7 @@ type GetWorkCountResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	Base      *BaseResp `protobuf:"bytes,1,opt,name=base,proto3" json:"base,omitempty"`
-	WorkCount int64     `protobuf:"varint,2,opt,name=work_count,json=workCount,proto3" json:"work_count,omitempty"` // 作品数量
+	WorkCount int64     `protobuf:"varint,2,opt,name=work_count,json=workCount,proto3" json:"work_count,omitempty"` // Number of published videos
 }
 
 func (x *GetWorkCountResponse) Reset() {
